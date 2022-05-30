@@ -1,77 +1,46 @@
 package ro.pub.cs.systems.eim.practicaltest02.model;
+import java.util.Calendar;
 
 public class GenericResults {
 
-    private String temperature;
-    private String windSpeed;
-    private String condition;
-    private String pressure;
-    private String humidity;
+    private String rate;
+    private String updated;
+    private long time;
 
-    public GenericResults() {
-        this.temperature = null;
-        this.windSpeed = null;
-        this.condition = null;
-        this.pressure = null;
-        this.humidity = null;
+    public GenericResults(String rate, String updated, long time) {
+        this.rate = rate;
+        this.updated = updated;
+        this.time = time;
     }
 
-    public GenericResults(String temperature, String windSpeed, String condition, String pressure, String humidity) {
-        this.temperature = temperature;
-        this.windSpeed = windSpeed;
-        this.condition = condition;
-        this.pressure = pressure;
-        this.humidity = humidity;
+    public String getRate() {
+        return rate;
     }
 
-    public String getTemperature() {
-        return temperature;
+    public void setRate(String rate) {
+        this.rate = rate;
     }
 
-    public void setTemperature(String temperature) {
-        this.temperature = temperature;
+    public String getUpdated() {
+        return updated;
     }
 
-    public String getWindSpeed() {
-        return windSpeed;
+    public void setUpdated(String updated) {
+        this.updated = updated;
     }
 
-    public void setWindSpeed(String windSpeed) {
-        this.windSpeed = windSpeed;
+    public long getTime() {
+        return time;
     }
 
-    public String getCondition() {
-        return condition;
+    public void setTime(int time) {
+        this.time = time;
     }
-
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
-
-    public String getPressure() {
-        return pressure;
-    }
-
-    public void setPressure(String pressure) {
-        this.pressure = pressure;
-    }
-
-    public String getHumidity() {
-        return humidity;
-    }
-
-    public void setHumidity(String humidity) {
-        this.humidity = humidity;
-    }
-
     @Override
     public String toString() {
-        return "GenericResults{" +
-                "temperature='" + temperature + '\'' +
-                ", windSpeed='" + windSpeed + '\'' +
-                ", condition='" + condition + '\'' +
-                ", pressure='" + pressure + '\'' +
-                ", humidity='" + humidity + '\'' +
+        return "BitcoinResults{" +
+                "rate='" + rate + '\'' +
+                ", updated='" + updated + '\'' +
                 '}';
     }
 

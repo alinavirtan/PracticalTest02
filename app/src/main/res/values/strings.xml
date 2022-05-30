@@ -1,11 +1,7 @@
 <resources>
     <string name="app_name">PracticalTest02</string>
     <string-array name="information_types">
-        <item>temperature</item>
-        <item>wind_speed</item>
-        <item>condition</item>
-        <item>pressure</item>
-        <item>humidity</item>
-        <item>all</item>
+        <item>USD</item>
+        <item>EUR</item>
     </string-array>
 </resources>

@@ -14,18 +14,16 @@ import ro.pub.cs.systems.eim.practicaltest02.general.Utilities;
 public class ClientThread extends Thread {
     private String address;
     private int port;
-    private String city;
     private String informationType;
-    private TextView weatherForecastTextView;
+    private TextView bitcoinTextView;
 
     private Socket socket;
 
-    public ClientThread(String address, int port, String city, String informationType, TextView weatherForecastTextView) {
+    public ClientThread(String address, int port, String informationType, TextView bitcoinTextView) {
         this.address = address;
         this.port = port;
-        this.city = city;
         this.informationType = informationType;
-        this.weatherForecastTextView = weatherForecastTextView;
+        this.bitcoinTextView = bitcoinTextView;
     }
 
     @Override
@@ -42,21 +40,19 @@ public class ClientThread extends Thread {
                 Log.e(Constants.TAG, "[CLIENT THREAD] Buffered Reader / Print Writer are null!");
                 return;
             }
-            printWriter.println(city);
-            printWriter.flush();
             printWriter.println(informationType);
             printWriter.flush();
 
-            String weatherInformation;
-            while ((weatherInformation = bufferedReader.readLine()) != null) {
-                final String finalizedWeateherInformation = weatherInformation;
-                weatherForecastTextView.post(new Runnable() {
+            String bitcoinInformation;
+            while ((bitcoinInformation = bufferedReader.readLine()) != null) {
+                final String finalizedBitcoinInformation = bitcoinInformation;
+                bitcoinTextView.post(new Runnable() {
                     @Override
                     public void run() {
-                        weatherForecastTextView.setText(finalizedWeateherInformation);
+                        bitcoinTextView.setText(finalizedBitcoinInformation);
                     }
                 });
-                Log.e(Constants.TAG, weatherInformation);
+                Log.e(Constants.TAG, bitcoinInformation);
             }
         } catch (IOException ioException) {
             Log.e(Constants.TAG, "[CLIENT THREAD] An exception has occurred: " + ioException.getMessage());

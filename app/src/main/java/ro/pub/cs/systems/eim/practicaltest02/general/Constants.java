@@ -7,7 +7,7 @@ public interface Constants {
     final public static boolean DEBUG = true;
 
     final public static String WEB_SERVICE_API_KEY = "e03c3b32cfb5a6f7069f2ef29237d87e";
-    final public static String WEB_SERVICE_ADDRESS = "https://api.openweathermap.org/data/2.5/weather";
+    final public static String WEB_SERVICE_ADDRESS = "https://api.coindesk.com/v1/bpi/currentprice/";
     final public static String WEB_SERVICE_MODE = "json";
     //final public static String WEB_SERVICE_ADDRESS = "https://www.wunderground.com/cgi-bin/findweather/getForecast";
 
@@ -37,5 +37,4 @@ public interface Constants {
     final public static String WEATHER = "weather";
     final public static String MAIN = "main";
     final public static String WIND = "wind";
-
 }

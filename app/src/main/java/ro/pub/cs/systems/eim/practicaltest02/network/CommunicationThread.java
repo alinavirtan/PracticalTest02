@@ -21,6 +21,7 @@ import java.util.HashMap;
 import ro.pub.cs.systems.eim.practicaltest02.general.Constants;
 import ro.pub.cs.systems.eim.practicaltest02.general.Utilities;
 import ro.pub.cs.systems.eim.practicaltest02.model.GenericResults;
+import java.util.Calendar;
 
 public class CommunicationThread extends Thread {
     private ServerThread serverThread;
@@ -47,25 +48,27 @@ public class CommunicationThread extends Thread {
             }
 
             Log.i(Constants.TAG, "[COMMUNICATION THREAD] Waiting for parameters from client (city / information type!");
-            String city = bufferedReader.readLine();
-            String informationType = bufferedReader.readLine();
-            if (city == null || city.isEmpty() || informationType == null || informationType.isEmpty()) {
+            String currency = bufferedReader.readLine();
+            if (currency == null || currency.isEmpty()) {
                 Log.e(Constants.TAG, "[COMMUNICATION THREAD] Error receiving parameters from client (city / information type!");
                 return;
             }
 
             HashMap<String, GenericResults> data = serverThread.getData();
-            GenericResults weatherForecastInformation = null;
+            GenericResults bitcoinInformation = null;
 
-            if (data.containsKey(city)) {
+            Calendar cal = Calendar.getInstance();
+            long currentTime = cal.getTimeInMillis();
+
+            if (data.containsKey(currency) && currentTime - data.get(currency).getTime() < 3600 ) {
                 Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the cache...");
-                weatherForecastInformation = data.get(city);
+                bitcoinInformation = data.get(currency);
             } else {
                 Log.i(Constants.TAG, "[COMMUNICATION THREAD] Getting the information from the webservice...");
                 HttpClient httpClient = new DefaultHttpClient();
                 String pageSourceCode = "";
 
-                HttpGet httpGet = new HttpGet(Constants.WEB_SERVICE_ADDRESS + "?q=" + city + "&appid=" + Constants.WEB_SERVICE_API_KEY + "&units=" + Constants.UNITS);
+                HttpGet httpGet = new HttpGet(Constants.WEB_SERVICE_ADDRESS + currency + ".json");
                 HttpResponse httpGetResponse = httpClient.execute(httpGet);
                 HttpEntity httpGetEntity = httpGetResponse.getEntity();
                 if (httpGetEntity != null) {
@@ -77,64 +80,24 @@ public class CommunicationThread extends Thread {
                     return;
                 }
 
-                Log.i(Constants.TAG, pageSourceCode);
                 JSONObject content = new JSONObject(pageSourceCode);
+                JSONObject bpi = content.getJSONObject("bpi");
+                JSONObject currencyJson = bpi.getJSONObject(currency);
+                String rate = currencyJson.getString("rate");
 
-                JSONArray weatherArray = content.getJSONArray(Constants.WEATHER);
-                JSONObject weather;
-                String condition = "";
-                for (int i = 0; i < weatherArray.length(); i++) {
-                    weather = weatherArray.getJSONObject(i);
-                    condition += weather.getString(Constants.MAIN) + " : " + weather.getString(Constants.DESCRIPTION);
+                JSONObject time = content.getJSONObject("time");
+                String updated = time.getString("updated");
 
-                    if (i < weatherArray.length() - 1) {
-                        condition += ";";
-                    }
-                }
-
-                JSONObject main = content.getJSONObject(Constants.MAIN);
-                String temperature = main.getString(Constants.TEMP);
-                String pressure = main.getString(Constants.PRESSURE);
-                String humidity = main.getString(Constants.HUMIDITY);
-
-                JSONObject wind = content.getJSONObject(Constants.WIND);
-                String windSpeed = wind.getString(Constants.SPEED);
-
-                weatherForecastInformation = new GenericResults(
-                        temperature, windSpeed, condition, pressure, humidity
-                );
-                serverThread.setData(city, weatherForecastInformation);
+                bitcoinInformation = new GenericResults(rate, updated, currentTime);
+                serverThread.setData(currency, bitcoinInformation);
             }
 
-            if (weatherForecastInformation == null) {
+            if (bitcoinInformation == null) {
                 Log.e(Constants.TAG, "[COMMUNICATION THREAD] Weather Forecast Information is null!");
                 return;
             }
 
-            String result = null;
-            switch(informationType) {
-                case Constants.ALL:
-                    result = weatherForecastInformation.toString();
-                    break;
-                case Constants.TEMPERATURE:
-                    result = weatherForecastInformation.getTemperature();
-                    break;
-                case Constants.WIND_SPEED:
-                    result = weatherForecastInformation.getWindSpeed();
-                    break;
-                case Constants.CONDITION:
-                    result = weatherForecastInformation.getCondition();
-                    break;
-                case Constants.HUMIDITY:
-                    result = weatherForecastInformation.getHumidity();
-                    break;
-                case Constants.PRESSURE:
-                    result = weatherForecastInformation.getPressure();
-                    break;
-                default:
-                    result = "[COMMUNICATION THREAD] Wrong information type (all / temperature / wind_speed / condition / humidity / pressure)!";
-            }
-            printWriter.println(result);
+            printWriter.println(bitcoinInformation.toString());
             printWriter.flush();
         } catch (IOException ioException) {
             Log.e(Constants.TAG, "[COMMUNICATION THREAD] An exception has occurred: " + ioException.getMessage());
